@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { kv } from '@vercel/kv';
 import { Order, MenuItem, SummaryData } from '@/types';
+import { toLocalDateStr } from '@/lib/date';
 
 const menusPath = path.join(process.cwd(), 'data', 'menus.json');
 const staffPath = path.join(process.cwd(), 'data', 'staff.json');
@@ -38,7 +39,7 @@ function getMonthRange(now: Date): { start: Date; end: Date; label: string } {
 export async function GET() {
   const [orders, menus, allStaff] = await Promise.all([readOrders(), readMenus(), readStaff()]);
   const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
+  const todayStr = toLocalDateStr(now);
 
   // 配達日ベースで本日分を集計
   const todayOrders = orders.filter(o => getDeliveryDate(o) === todayStr);
@@ -52,7 +53,7 @@ export async function GET() {
   for (let i = 29; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
-    dailyMap.set(d.toISOString().slice(0, 10), { count: 0, sales: 0 });
+    dailyMap.set(toLocalDateStr(d), { count: 0, sales: 0 });
   }
   orders.forEach(o => {
     const ds = getDeliveryDate(o);

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, CSSProperties } from 'react';
 import { Order } from '@/types';
+import { todayJST } from '@/lib/date';
 
 const MIN_ROWS = 15;
 
@@ -30,7 +31,7 @@ export default function BulletinBoard() {
   const [loading, setLoading] = useState(true);
 
   const load = () => {
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayStr = todayJST();
     fetch(`/api/orders?deliveryDate=${todayStr}`)
       .then(r => r.json())
       .then((todayOrders: Order[]) => {

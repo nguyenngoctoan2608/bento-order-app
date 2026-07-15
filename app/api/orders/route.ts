@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { Order } from '@/types';
+import { toLocalDateStr } from '@/lib/date';
 
 async function readOrders(): Promise<Order[]> {
   try {
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
     price: Number(body.price),
     status: '受付済',
     orderedAt: now.toISOString(),
-    deliveryDate: body.deliveryDate ?? now.toISOString().slice(0, 10),
+    deliveryDate: body.deliveryDate ?? toLocalDateStr(now),
   };
   orders.push(newOrder);
   await writeOrders(orders);

@@ -4,6 +4,7 @@ import path from 'path';
 import ExcelJS from 'exceljs';
 import { kv } from '@vercel/kv';
 import { Order } from '@/types';
+import { toLocalDateStr } from '@/lib/date';
 
 // ===== 設定 =====
 const PRICE_A = 450;
@@ -49,13 +50,6 @@ function getThreePeriods(now: Date): Array<{ start: Date; end: Date }> {
     periods.push({ start: newStart, end: newEnd });
   }
   return periods;
-}
-
-function toLocalDateStr(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
 }
 
 function getWeekdays(start: Date, end: Date): string[] {
