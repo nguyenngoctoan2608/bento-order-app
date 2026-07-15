@@ -4,7 +4,7 @@ import path from 'path';
 import ExcelJS from 'exceljs';
 import { kv } from '@vercel/kv';
 import { Order } from '@/types';
-import { toLocalDateStr } from '@/lib/date';
+import { toLocalDateStr, getBillingPeriod } from '@/lib/date';
 
 // ===== 設定 =====
 const PRICE_A = 450;
@@ -24,17 +24,8 @@ function isTypeB(order: Order): boolean {
 }
 
 function getMonthRange(now: Date): { start: Date; end: Date } {
-  const day = now.getDate();
-  if (day >= 16) {
-    return {
-      start: new Date(now.getFullYear(), now.getMonth(), 16),
-      end:   new Date(now.getFullYear(), now.getMonth() + 1, 15),
-    };
-  }
-  return {
-    start: new Date(now.getFullYear(), now.getMonth() - 1, 16),
-    end:   new Date(now.getFullYear(), now.getMonth(), 15),
-  };
+  const { start, end } = getBillingPeriod(now);
+  return { start, end };
 }
 
 // 当月を含む3期分の期間を新しい順に返す
@@ -108,10 +99,12 @@ function buildSheet(
 ): void {
   const weekdays = getWeekdays(start, end);
 
+  const startStr = toLocalDateStr(start);
+  const endStr = toLocalDateStr(end);
   const periodOrders = allOrders.filter(o => {
     if (o.status === 'キャンセル済') return false;
-    const d = new Date((o.deliveryDate ?? o.orderedAt.slice(0, 10)) + 'T00:00:00');
-    return d >= start && d <= end;
+    const ds = o.deliveryDate ?? o.orderedAt.slice(0, 10);
+    return ds >= startStr && ds <= endStr;
   });
 
   // 日×社員 → ラベル

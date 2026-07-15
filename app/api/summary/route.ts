@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { kv } from '@vercel/kv';
 import { Order, MenuItem, SummaryData } from '@/types';
-import { toLocalDateStr } from '@/lib/date';
+import { toLocalDateStr, getBillingPeriod } from '@/lib/date';
 
 const menusPath = path.join(process.cwd(), 'data', 'menus.json');
 const staffPath = path.join(process.cwd(), 'data', 'staff.json');
@@ -23,15 +23,7 @@ function getDeliveryDate(o: Order): string {
 }
 
 function getMonthRange(now: Date): { start: Date; end: Date; label: string } {
-  const day = now.getDate();
-  let start: Date, end: Date;
-  if (day >= 16) {
-    start = new Date(now.getFullYear(), now.getMonth(), 16);
-    end   = new Date(now.getFullYear(), now.getMonth() + 1, 15, 23, 59, 59);
-  } else {
-    start = new Date(now.getFullYear(), now.getMonth() - 1, 16);
-    end   = new Date(now.getFullYear(), now.getMonth(), 15, 23, 59, 59);
-  }
+  const { start, end } = getBillingPeriod(now);
   const fmt = (d: Date) => `${d.getMonth() + 1}/${d.getDate()}`;
   return { start, end, label: `${fmt(start)}〜${fmt(end)}` };
 }
