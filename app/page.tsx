@@ -44,6 +44,7 @@ export default function Page() {
   const [staffList, setStaffList] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [deadlinePassed, setDeadlinePassed] = useState(isDeadlinePassed);
+  const [today, setToday] = useState(getTodayStr);
 
   useEffect(() => {
     fetch('/api/menus').then(r => r.json()).then(setMenus);
@@ -54,6 +55,24 @@ export default function Page() {
       setOrderView('bulletin');
     }
   }, []);
+
+  // タブを開きっぱなしのまま日付が変わった場合、締め切り状態を
+  // 新しい日に合わせて再判定する（古い「翌日注文」状態のまま
+  // 新しい日の注文が翌々日扱いになるのを防ぐ）
+  useEffect(() => {
+    const id = setInterval(() => {
+      const nowToday = getTodayStr();
+      if (nowToday !== today) {
+        setToday(nowToday);
+        const passed = isDeadlinePassed();
+        setDeadlinePassed(passed);
+        if (orderView === 'next-day' || orderView === 'bulletin') {
+          setOrderView(passed ? 'bulletin' : 'select');
+        }
+      }
+    }, 30000);
+    return () => clearInterval(id);
+  }, [today, orderView, setOrderView]);
 
   const handleDeadlineExpired = () => {
     setDeadlinePassed(true);
