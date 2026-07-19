@@ -18,8 +18,21 @@ export function todayJST(): string {
   return toLocalDateStr(new Date());
 }
 
-export function tomorrowJST(): string {
-  return toLocalDateStr(new Date(Date.now() + 24 * 60 * 60 * 1000));
+function jstWeekday(d: Date): number {
+  const jst = new Date(d.getTime() + JST_OFFSET_MS);
+  return jst.getUTCDay(); // 0=日, 6=土
+}
+
+/**
+ * 翌営業日（土日をスキップ）をJST基準で返す。金曜の締め切り後は
+ * 土曜ではなく月曜を返す。土日出勤がない前提。
+ */
+export function nextBusinessDayJST(): string {
+  let d = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const dow = jstWeekday(d);
+  if (dow === 6) d = new Date(d.getTime() + 2 * 24 * 60 * 60 * 1000); // 土→月
+  else if (dow === 0) d = new Date(d.getTime() + 1 * 24 * 60 * 60 * 1000); // 日→月
+  return toLocalDateStr(d);
 }
 
 /**

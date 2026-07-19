@@ -13,10 +13,10 @@ import AdminDashboard from '@/components/AdminDashboard';
 import AdminMenuManager from '@/components/AdminMenuManager';
 import UsageGuide from '@/components/UsageGuide';
 import AdminGuard from '@/components/AdminGuard';
-import { todayJST, tomorrowJST } from '@/lib/date';
+import { todayJST, nextBusinessDayJST } from '@/lib/date';
 
 function getNextDay(): string {
-  return tomorrowJST();
+  return nextBusinessDayJST();
 }
 
 function getTodayStr(): string {
