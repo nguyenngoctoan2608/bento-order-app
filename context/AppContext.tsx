@@ -5,7 +5,7 @@ import { MenuItem, Order } from '@/types';
 
 type MainTab = '注文' | '使い方' | '管理者';
 type OrderView = 'select' | 'next-day' | 'complete' | 'history' | 'bulletin';
-type AdminView = 'dashboard' | 'menus';
+type AdminView = 'dashboard' | 'menus' | 'add-order';
 
 interface ToastState { message: string; type: 'success' | 'warning' | 'info' }
 

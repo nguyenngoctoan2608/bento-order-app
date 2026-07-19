@@ -11,6 +11,7 @@ import BulletinBoard from '@/components/BulletinBoard';
 import Toast from '@/components/Toast';
 import AdminDashboard from '@/components/AdminDashboard';
 import AdminMenuManager from '@/components/AdminMenuManager';
+import AdminAddOrder from '@/components/AdminAddOrder';
 import UsageGuide from '@/components/UsageGuide';
 import AdminGuard from '@/components/AdminGuard';
 import { todayJST, nextBusinessDayJST } from '@/lib/date';
@@ -267,8 +268,8 @@ export default function Page() {
         {mainTab === '管理者' && (
           <AdminGuard>
             <div className="flex gap-2 mb-5">
-              {(['dashboard', 'menus'] as const).map(view => {
-                const labels = { dashboard: 'ダッシュボード', menus: 'メニュー管理' };
+              {(['dashboard', 'menus', 'add-order'] as const).map(view => {
+                const labels = { dashboard: 'ダッシュボード', menus: 'メニュー管理', 'add-order': '注文追加' };
                 return (
                   <button
                     key={view}
@@ -283,6 +284,7 @@ export default function Page() {
             </div>
             {adminView === 'dashboard' && <AdminDashboard />}
             {adminView === 'menus' && <AdminMenuManager onMenusUpdated={() => fetch('/api/menus').then(r => r.json()).then(setMenus)} />}
+            {adminView === 'add-order' && <AdminAddOrder />}
           </AdminGuard>
         )}
       </main>
